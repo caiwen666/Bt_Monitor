@@ -1,4 +1,4 @@
-var MAIN_URL="ws://:15565";//接口地址
+﻿var MAIN_URL="ws://:15565";//接口地址
 let part = 3000;//刷新频率
 let maxx = 5;//实时网速表格最多呈现的时间点个数
 
@@ -6,9 +6,9 @@ var websock = null;
 
 function init(){
     websock = new WebSocket(MAIN_URL);
-    websock.onmessage = onmessage;
-    websock.onopen = onopen;
-    websock.onclose = onclose;
+    websock.onmessage = ws_onmessage;
+    websock.onopen = ws_onopen;
+    websock.onclose = ws_onclose;
 }
 function send_request(target){
     if(websock.readyState!=1){
@@ -21,7 +21,7 @@ function send_request(target){
     websock.send(JSON.stringify(data));
     
 }
-function onmessage(data){
+function ws_onmessage(data){
     data=JSON.parse(data.data);
     if(data.path=="/net"){
         data=data.data;
@@ -68,14 +68,14 @@ function onmessage(data){
         $("#storage_pro").css("width",data[0].size[3]);
     }
 }
-function onopen(){
+function ws_onopen(){
     $("#status").text("已连接");
     send_request("/system");
     send_request("/disk");
     send_request("/usage");
     send_request("/net");
 }
-function onclose(){
+function ws_onclose(){
     $("#status").text("失去连接");
     mdui.snackbar({
         message: '失去连接，请刷新网页重新连接。',
